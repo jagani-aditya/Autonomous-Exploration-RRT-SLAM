@@ -1,0 +1,48 @@
+<launch>
+
+  <!-- Arguements -->
+  <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="-2.0"/>
+  <arg name="y_pos" default="1.0"/>
+  <arg name="z_pos" default="0.0"/>
+
+  <!-- Launch World in Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+
+    <!-- =======================   IMPORTANT NOTE ===========================-->
+    <!-- Incase you dont have the turtlebot3_gazebo package installed -> please refer to worlds folder in this package -->
+    
+    <!-- <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_world.world"/> -->
+    <!-- <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/> -->
+    <arg name="world_name" value="$(find mobile_manipulator)/worlds/neo_workshop.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- Robot description-->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+  <!-- Spawn robot in Gazebo -->  
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+  <!--Publish TF Frames -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" respawn="false" />
+  
+  <!-- Launch Gmapping and Navigation file -->
+  <include file="$(find explore_env)/launch/turtlebot_slam_nav.launch" />
+
+  <!-- Launch RRT Exploration file -->
+  <include file="$(find explore_env)/launch/rrt_explore.launch" />
+
+  <!-- Rviz configuration -->
+  <node pkg="rviz" type="rviz" name="rviz" required="true"
+            args="-d $(find explore_env)/rviz/turtlebot_explore.rviz"/>
+
+  <!-- Logs Data to ~/.ros directory (can be found in hidden folder in $HOME directory) -->
+  <node name="data_logger_node" pkg="explore_env" type="data_log.py" output="screen" />
+
+
+</launch>

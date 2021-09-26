@@ -1,0 +1,38 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/>
+  <arg name="set_base_frame" default="base_footprint"/>
+  <arg name="set_odom_frame" default="odom"/>
+  <arg name="set_map_frame"  default="map"/>
+
+
+  <!-- Gmapping -->
+  <node pkg="gmapping" type="slam_gmapping" name="turtlebot3_slam_gmapping" output="screen">
+    <param name="base_frame" value="$(arg set_base_frame)"/>
+    <param name="odom_frame" value="$(arg set_odom_frame)"/>
+    <param name="map_frame"  value="$(arg set_map_frame)"/>
+    <rosparam command="load" file="$(find explore_env)/config/gmapping_params.yaml" />
+  </node>
+
+  <!-- Arguments -->
+  <arg name="cmd_vel_topic" default="/cmd_vel" />
+  <arg name="odom_topic" default="odom" />
+  <arg name="move_forward_only" default="false"/>
+
+  <!-- Move_Base for autonomous navigation -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+    <rosparam file="$(find explore_env)/param/costmap_common_params_$(arg model).yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find explore_env)/param/costmap_common_params_$(arg model).yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find explore_env)/param/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find explore_env)/param/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find explore_env)/param/move_base_params.yaml" command="load" />
+    <rosparam file="$(find explore_env)/param/dwa_local_planner_params_$(arg model).yaml" command="load" />
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+    <remap from="odom" to="$(arg odom_topic)"/>
+    <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
+  </node>
+
+
+</launch>

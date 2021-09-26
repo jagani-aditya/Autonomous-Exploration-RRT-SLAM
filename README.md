@@ -1,1 +1,7 @@
-# Autonomous-Exploration-RRT-SLAM
+# Autonomous Exploration RRT SLAM
+
+## Project Description
+
+## Platform
+
+## Implementation

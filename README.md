@@ -2,12 +2,17 @@
 
 ## Project Description
 
-![Map 1](/images/map1.jpg)
+<p align="center">
+  <img src="/Media/map1.jpg" />
+</p>
 
-![Map 2](/images/map2.jpg)
+<p align="center">
+  <img src="/Media/map2.jpg" />
+</p>
 
-![Map 3](/images/map3.jpg)
-
+<p align="center">
+  <img src="/Media/map3.jpg" />
+</p>
 
 ## Platform
 
